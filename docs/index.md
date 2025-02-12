@@ -1,4 +1,4 @@
-# Práctica 6.1 - Dockerización del despliegue de una aplicación con Node.js
+	# Práctica 6.1 - Dockerización del despliegue de una aplicación con Node.js
 
 ## Despliegue con Docker
 
@@ -57,9 +57,32 @@ de la aplicación:
 
 ![Referencia API](./images/referencia_api.png)
 
-Pero aún no será posible hacer uso completo de la aplicación, ya que no 
-hay configurado un sistema de persistencia de datos.
 
 ## Docker Compose
 
+Para gestionar el contenedor de la aplicación junto con otro que 
+se encargue de dar servicio de persistencia de datos, el repositorio 
+contiene un archivo 'docker-compose.yml'. A partir de este archivo, 
+levantaremos la infraestructura completa de la aplicación (los dos 
+contenedores que actualmente la componen). Para ello, hay que ejecutar:
 
+```console
+docker compose run addressbook npm run migrate  # Se crean las tablas de la BBDD
+```
+
+```console
+docker compose up --build -d  # Se construyen los contenedores de la aplicación
+```
+
+Ahora, para comprobar el buen funcionamiento de la aplicación, voy a realizar 
+una petición PUT para insertar datos dentro de la BBDD de la aplicación, 
+ejecutando:
+
+```console
+curl -X PUT http://localhost:3000/persons -H'Content-Type: application/json' -d '{"id": 1, "firstName": "Alberto", "lasName": "Pérez"}'
+```
+
+Si ahora, desde el navegador, accedo a la ruta que realiza la petición GET de 
+todos los datos de la tabla, muestra:
+
+![Peticion GET navegador](./images/peticion_get.png)
