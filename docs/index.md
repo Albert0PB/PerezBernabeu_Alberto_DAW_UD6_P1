@@ -1,4 +1,4 @@
-	# Práctica 6.1 - Dockerización del despliegue de una aplicación con Node.js
+# Práctica 6.1 - Dockerización del despliegue de una aplicación con Node.js
 
 ## Despliegue con Docker
 
