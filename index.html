@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="None">
+        
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>My Docs</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/fontawesome.min.css" rel="stylesheet">
+        <link href="css/brands.min.css" rel="stylesheet">
+        <link href="css/solid.min.css" rel="stylesheet">
+        <link href="css/v4-font-face.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body class="homepage">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".">My Docs</a>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#practica-61-dockerizacion-del-despliegue-de-una-aplicacion-con-nodejs" class="nav-link">Práctica 6.1 - Dockerización del despliegue de una aplicación con Node.js</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#despliegue-con-docker" class="nav-link">Despliegue con Docker</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#docker-compose" class="nav-link">Docker Compose</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="practica-61-dockerizacion-del-despliegue-de-una-aplicacion-con-nodejs">Práctica 6.1 - Dockerización del despliegue de una aplicación con Node.js</h1>
+<h2 id="despliegue-con-docker">Despliegue con Docker</h2>
+<p>Para realizar esta práctica de despliegue con Docker será 
+necesario tener disponible una aplicación que desplegar en primer lugar.
+Para ello, clonaré un repositorio de GitHub ejecutando:</p>
+<pre><code class="language-console">git clone https://github.com/raul-profesor/DAW_practica_6.1_2024.git
+</code></pre>
+<p>Este repositorio ya contiene un documento Dockerfile, pero es necesario 
+modificar su contenido para poder realizar el despliegue correctamente. </p>
+<p>En este caso, el contenido de este archivo será:</p>
+<pre><code class="language-console">FROM node:18.16.0-alpine3.17
+RUN  mkdir -p /opt/app
+WORKDIR /opt/app
+COPY src/package.json src/package-lock.json .
+RUN npm install
+COPY src/ .
+EXPOSE 3000
+CMD [ &quot;npm&quot;, &quot;start&quot;]
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Comando</th>
+<th>Explicación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FROM node:18.16.0-alpine3.17</td>
+<td>Indica que las imágenes base de esta aplicación serán la imágenes oficiales de Node y Alpine Linux en Docker Hub</td>
+</tr>
+<tr>
+<td>RUN  mkdir -p /opt/app</td>
+<td>Se crea el directorio /opt/app dentro de una nueva capa de la imagen base que estamos utilizando</td>
+</tr>
+<tr>
+<td>WORKDIR /opt/app</td>
+<td>Establece '/opt/app/ como el directorio de trabajo a utilizar. Todas las instrucciones se ejecutarán desde esta ruta a partir de ahora</td>
+</tr>
+<tr>
+<td>COPY src/package.json src/package-lock.json .</td>
+<td>Se copian estos archivos de la máquina local a la imagen de Docker</td>
+</tr>
+<tr>
+<td>RUN npm install</td>
+<td>Se ejecuta 'npm install' dentro de la imagen de Docker</td>
+</tr>
+<tr>
+<td>COPY src/ .</td>
+<td>Se copian el resto de contenidos de src/ (de la máquina local) a la imagen de Docker</td>
+</tr>
+<tr>
+<td>EXPOSE 3000</td>
+<td>Indica que el contenedor, en tiempo de ejecución, debe 'escuchar' en el puerto 3000</td>
+</tr>
+<tr>
+<td>CMD [ "npm", "start"]</td>
+<td>Indica que el contenedor, al ser arrancado, debe ejecutar 'npm start', lo que hará que arranque la ejecución de la aplicación</td>
+</tr>
+</tbody>
+</table>
+<p>Con nuestro archivo Dockerfile preparado, podemos 'construir' la imagen de 
+Docker. Para ello sólo hay que ejecutar: </p>
+<pre><code class="language-console">docker build -t librodirecciones .
+</code></pre>
+<p>Para ejecutar la aplicación 'dockerizada' y comprobar su buen funcionamiento, 
+hay que ejecutar: </p>
+<pre><code class="language-console">$ docker run -p 3000:3000 -d librodirecciones
+</code></pre>
+<p>Si accedemos al puerto 3000, tendremos acceso a una referencia de la API 
+de la aplicación: </p>
+<p><img alt="Referencia API" src="images/referencia_api.png" /></p>
+<h2 id="docker-compose">Docker Compose</h2>
+<p>Para gestionar el contenedor de la aplicación junto con otro que 
+se encargue de dar servicio de persistencia de datos, el repositorio 
+contiene un archivo 'docker-compose.yml'. A partir de este archivo, 
+levantaremos la infraestructura completa de la aplicación (los dos 
+contenedores que actualmente la componen). Para ello, hay que ejecutar:</p>
+<pre><code class="language-console">docker compose run addressbook npm run migrate  # Se crean las tablas de la BBDD
+</code></pre>
+<pre><code class="language-console">docker compose up --build -d  # Se construyen los contenedores de la aplicación
+</code></pre>
+<p>Ahora, para comprobar el buen funcionamiento de la aplicación, voy a realizar 
+una petición PUT para insertar datos dentro de la BBDD de la aplicación, 
+ejecutando:</p>
+<pre><code class="language-console">curl -X PUT http://localhost:3000/persons -H'Content-Type: application/json' -d '{&quot;id&quot;: 1, &quot;firstName&quot;: &quot;Alberto&quot;, &quot;lasName&quot;: &quot;Pérez&quot;}'
+</code></pre>
+<p>Si ahora, desde el navegador, accedo a la ruta que realiza la petición GET de 
+todos los datos de la tabla, muestra:</p>
+<p><img alt="Peticion GET navegador" src="images/peticion_get.png" /></p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js"></script>
+        <script src="search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2025-02-12 14:52:14.840336+00:00
+-->
